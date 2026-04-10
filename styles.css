@@ -1081,8 +1081,15 @@ section {
 }
 
 /* Lebanon-specific additions */
+<!--
 .hero.lebanon {
     background: linear-gradient(135deg, #52307C 0%, #52307C 100%);
+}
+-->
+
+.hero.lebanon {
+    background: linear-gradient(135deg, #3C1E5F 0%, #2A1249 100%);
+    color: white;
 }
 
 .unit2-highlight {
