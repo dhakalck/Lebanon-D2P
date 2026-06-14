@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - D2P Unit 2 Lebanon Training</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #2d3748; }
+        .navbar { background: #1a365d; padding: 0 2rem; }
+        .nav-container { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; height: 56px; }
+        .logo { color: #fff; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.02em; }
+        .nav-menu { list-style: none; display: flex; gap: 1.5rem; }
+        .nav-menu a { color: #bee3f8; text-decoration: none; font-size: 0.9rem; }
+        .nav-menu a.active, .nav-menu a:hover { color: #fff; border-bottom: 2px solid #63b3ed; padding-bottom: 2px; }
+        .page-header { background: linear-gradient(135deg, #2b6cb0, #2c7a7b); color: #fff; padding: 2.5rem 1rem; text-align: center; }
+        .page-header h1 { font-size: 2rem; margin-bottom: 0.4rem; }
+        .page-header p { font-size: 1rem; opacity: 0.9; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+        .agenda-intro { background: #fff; border-radius: 8px; padding: 1.5rem 2rem; margin-bottom: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .agenda-intro h2 { color: #2b6cb0; margin-bottom: 0.8rem; font-size: 1.2rem; }
+        .schedule-note { background: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 0 6px 6px 0; padding: 1rem 1.2rem; margin-top: 1rem; }
+        .schedule-note p { margin-bottom: 0.4rem; }
+        .schedule-note ul { margin-left: 1.2rem; }
+        .schedule-note li { font-size: 0.92rem; margin-bottom: 0.2rem; }
+        .agenda-day { background: #fff; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; }
+        .day-header { background: #2b6cb0; color: #fff; padding: 0.9rem 1.5rem; font-size: 1rem; font-weight: 700; }
+        .day-description { padding: 0.8rem 1.5rem 0.4rem; font-size: 0.92rem; color: #4a5568; }
+        .agenda-table { width: 100%; margin-top: 0.5rem; }
+        .agenda-row { display: grid; grid-template-columns: 185px 1fr 220px; border-bottom: 1px solid #e2e8f0; }
+        .agenda-row.header { background: #ebf4ff; font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: #2b6cb0; }
+        .agenda-row.break { background: #f0fff4; color: #276749; font-size: 0.85rem; font-weight: 600; }
+        .agenda-row.lecture { background: #fffbeb; }
+        .agenda-row:last-child { border-bottom: none; }
+        .time, .topic, .facilitator { padding: 0.65rem 1rem; font-size: 0.88rem; }
+        .time { color: #4a5568; white-space: nowrap; border-right: 1px solid #e2e8f0; vertical-align: middle; }
+        .facilitator { border-left: 1px solid #e2e8f0; color: #2c7a7b; font-size: 0.85rem; }
+        .agenda-row.break .time { color: #276749; }
+        .agenda-row.break .facilitator { color: #276749; }
+        .agenda-row.lecture .time { color: #744210; }
+        .topic strong { display: block; margin-bottom: 0.1rem; color: #1a365d; }
+        .agenda-row.lecture .topic strong { color: #744210; }
+        .lecture-badge { display: inline-block; background: #fbd38d; color: #744210; font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 3px; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .agenda-notes, .learning-objectives { background: #fff; border-radius: 8px; padding: 1.5rem 2rem; margin-bottom: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .agenda-notes h2, .learning-objectives h2 { color: #2b6cb0; margin-bottom: 0.8rem; font-size: 1.2rem; }
+        .agenda-notes ul { margin-left: 1.2rem; }
+        .agenda-notes li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+        .objectives-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .objective-card { background: #ebf8ff; border-radius: 6px; padding: 1rem; }
+        .objective-card h4 { font-size: 0.88rem; color: #2b6cb0; margin-bottom: 0.5rem; }
+        .objective-card ul { margin-left: 1rem; }
+        .objective-card li { font-size: 0.82rem; margin-bottom: 0.2rem; color: #4a5568; }
+        .footer { background: #1a365d; color: #bee3f8; padding: 1.5rem 1rem; margin-top: 2rem; }
+        .footer-content { display: flex; align-items: center; gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+        .footer-logo { height: 48px; object-fit: contain; }
+        .footer-text p { font-size: 0.78rem; }
+        @media (max-width: 700px) {
+            .agenda-row { grid-template-columns: 1fr; }
+            .time, .facilitator { border: none; border-bottom: 1px solid #e2e8f0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">D2P Lebanon - Unit 2</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="agenda.html" class="active">Agenda</a></li>
+                <li><a href="facilitators.html">Facilitators</a></li>
+                <li><a href="materials.html">Training Materials</a></li>
+                <li><a href="logistics.html">Logistics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>Training Agenda</h1>
+            <p>Unit 2: Economic Evaluation of Policy | June 15–18, 2026</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="agenda-intro">
+            <h2>Overview</h2>
+            <p>This intensive 4-day training focuses on economic evaluation methods for health policy analysis. Participants will learn to assess costs, model health impacts, and conduct cost-effectiveness analyses for their policy briefs on Health Technology Assessment in Lebanon.</p>
+            <div class="schedule-note">
+                <p><strong>Daily Schedule:</strong></p>
+                <ul>
+                    <li>Training Hours: 9:00 AM – 4:00 PM (Day 4 ends at 3:30 PM)</li>
+                    <li>Morning Coffee Break: 10:30 – 10:45 AM (varies by day)</li>
+                    <li>Lunch Break: 12:00 – 1:00 PM</li>
+                    <li>Afternoon Coffee Break: 3:30 – 3:45 PM</li>
+                </ul>
+                <p><strong>Training Format:</strong> One lecture module per day (highlighted in amber), followed by intensive group work with mentors</p>
+            </div>
+        </section>
+
+        <!-- DAY 1 -->
+        <section class="agenda-day">
+            <h2 class="day-header">DAY 1: Monday, June 15, 2026 — Framing Economic Evaluation</h2>
+            <div class="day-description"><p><strong>Lecture:</strong> Module L09 — Framing an Economic Evaluation &nbsp;|&nbsp; <strong>Lead:</strong> Dr. Rita</p></div>
+            <div class="agenda-table">
+                <div class="agenda-row header">
+                    <div class="time">Time</div>
+                    <div class="topic">Session / Topic</div>
+                    <div class="facilitator">Facilitator</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">9:00 – 9:30 AM</div>
+                    <div class="topic"><strong>Welcome &amp; Introduction</strong></div>
+                    <div class="facilitator">Lara, Rita, Sydney, Chandra</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">9:30 – 10:30 AM</div>
+                    <div class="topic"><strong>Recap Unit 1</strong></div>
+                    <div class="facilitator">Rita, Sydney, all</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">10:30 – 10:45 AM</div>
+                    <div class="topic">☕ MORNING COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row lecture">
+                    <div class="time">10:45 AM – 12:00 PM</div>
+                    <div class="topic">
+                        <span class="lecture-badge">Lecture</span>
+                        <strong>Module L09: Framing an Economic Evaluation</strong>
+                    </div>
+                    <div class="facilitator">Dr. Rita</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">12:00 – 1:00 PM</div>
+                    <div class="topic">🍽 LUNCH BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">1:00 – 3:30 PM</div>
+                    <div class="topic"><strong>Group Work: Econ Evaluation Framework</strong></div>
+                    <div class="facilitator">Mentor Teams (All groups)</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">3:30 – 3:45 PM</div>
+                    <div class="topic">☕ AFTERNOON COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">3:45 – 4:00 PM</div>
+                    <div class="topic"><strong>Day 1 Wrap-Up &amp; Reflection</strong></div>
+                    <div class="facilitator"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DAY 2 -->
+        <section class="agenda-day">
+            <h2 class="day-header">DAY 2: Tuesday, June 16, 2026 — Assessing Health Impact</h2>
+            <div class="day-description"><p><strong>Lecture:</strong> Module L10 — Assessing Health Impact &nbsp;|&nbsp; <strong>Lead:</strong> Chandra</p></div>
+            <div class="agenda-table">
+                <div class="agenda-row header">
+                    <div class="time">Time</div>
+                    <div class="topic">Session / Topic</div>
+                    <div class="facilitator">Facilitator</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">9:00 – 9:15 AM</div>
+                    <div class="topic"><strong>Day 2 Welcome &amp; Recap</strong></div>
+                    <div class="facilitator">Chandra, Rita</div>
+                </div>
+                <div class="agenda-row lecture">
+                    <div class="time">9:15 – 10:30 AM</div>
+                    <div class="topic">
+                        <span class="lecture-badge">Lecture</span>
+                        <strong>Module L10: Assessing Health Impact</strong>
+                    </div>
+                    <div class="facilitator">Chandra</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">10:30 – 10:45 AM</div>
+                    <div class="topic">☕ MORNING COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">10:45 AM – 12:00 PM</div>
+                    <div class="topic"><strong>Group Work: Building Decision Tree Models in Excel / AMUA</strong></div>
+                    <div class="facilitator">Mentor Teams (All groups)</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">12:00 – 1:00 PM</div>
+                    <div class="topic">🍽 LUNCH BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">1:00 – 3:30 PM</div>
+                    <div class="topic"><strong>Group Work: Populating Models with Data</strong></div>
+                    <div class="facilitator">Mentor Teams (All groups)</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">3:30 – 3:45 PM</div>
+                    <div class="topic">☕ AFTERNOON COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">3:45 – 4:00 PM</div>
+                    <div class="topic"><strong>Day 2 Wrap-Up &amp; Reflection</strong></div>
+                    <div class="facilitator">Chandra, Rita, Caroline</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DAY 3 -->
+        <section class="agenda-day">
+            <h2 class="day-header">DAY 3: Wednesday, June 17, 2026 — Cost Analysis &amp; Economic Evaluation</h2>
+            <div class="day-description"><p><strong>Lectures:</strong> Module L11 — Cost Analysis (Dr. Caroline) &amp; Module L12 — Economic Evaluation Methods (Chandra)</p></div>
+            <div class="agenda-table">
+                <div class="agenda-row header">
+                    <div class="time">Time</div>
+                    <div class="topic">Session / Topic</div>
+                    <div class="facilitator">Facilitator</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">9:00 – 9:15 AM</div>
+                    <div class="topic"><strong>Day 3 Welcome &amp; Recap</strong></div>
+                    <div class="facilitator">Dr. Caroline</div>
+                </div>
+                <div class="agenda-row lecture">
+                    <div class="time">9:15 – 10:15 AM</div>
+                    <div class="topic">
+                        <span class="lecture-badge">Lecture</span>
+                        <strong>Module L11: Cost Analysis</strong>
+                    </div>
+                    <div class="facilitator">Dr. Caroline</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">10:15 – 10:30 AM</div>
+                    <div class="topic">☕ MORNING COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row lecture">
+                    <div class="time">10:30 – 11:30 AM</div>
+                    <div class="topic">
+                        <span class="lecture-badge">Lecture</span>
+                        <strong>Module L12: Economic Evaluation Methods</strong>
+                    </div>
+                    <div class="facilitator">Chandra</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">11:30 AM – 1:00 PM</div>
+                    <div class="topic"><strong>Group Work: Cost-Effectiveness Analysis</strong></div>
+                    <div class="facilitator">Mentor Teams</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">1:00 – 2:00 PM</div>
+                    <div class="topic">🍽 LUNCH BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">2:00 – 3:30 PM</div>
+                    <div class="topic"><strong>Group Work: Completing CEA Models &amp; Interpreting ICERs</strong></div>
+                    <div class="facilitator">Mentor Teams</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">3:30 – 3:45 PM</div>
+                    <div class="topic">☕ AFTERNOON COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">3:45 – 4:00 PM</div>
+                    <div class="topic"><strong>Day 3 Wrap-Up &amp; Reflection</strong></div>
+                    <div class="facilitator">Chandra</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DAY 4 -->
+        <section class="agenda-day">
+            <h2 class="day-header">DAY 4: Thursday, June 18, 2026 — Sensitivity Analysis &amp; Presentations</h2>
+            <div class="day-description"><p><strong>Lecture:</strong> Module L13 — Sensitivity Analysis &nbsp;|&nbsp; <strong>Lead:</strong> Dr. Sabah</p></div>
+            <div class="agenda-table">
+                <div class="agenda-row header">
+                    <div class="time">Time</div>
+                    <div class="topic">Session / Topic</div>
+                    <div class="facilitator">Facilitator</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">9:00 – 9:15 AM</div>
+                    <div class="topic"><strong>Day 4 Welcome</strong></div>
+                    <div class="facilitator">Dr. Sabah</div>
+                </div>
+                <div class="agenda-row lecture">
+                    <div class="time">9:15 – 10:00 AM</div>
+                    <div class="topic">
+                        <span class="lecture-badge">Lecture</span>
+                        <strong>Module L13: Sensitivity Analysis</strong>
+                    </div>
+                    <div class="facilitator">Dr. Sabah</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">10:00 – 10:15 AM</div>
+                    <div class="topic">☕ MORNING COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">10:15 – 11:00 AM</div>
+                    <div class="topic"><strong>Group Work: Sensitivity Analysis &amp; Finalizing Evaluations</strong></div>
+                    <div class="facilitator">Mentor Teams</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">11:00 AM – 12:00 PM</div>
+                    <div class="topic"><strong>Group Work: Preparation of the Presentation</strong></div>
+                    <div class="facilitator">Mentor Teams</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">12:00 – 1:00 PM</div>
+                    <div class="topic">🍽 LUNCH BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">1:00 – 1:30 PM</div>
+                    <div class="topic"><strong>Group Work: Finalization of Presentations</strong></div>
+                    <div class="facilitator">Mentor Teams</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">1:30 – 2:30 PM</div>
+                    <div class="topic"><strong>Group Presentations &amp; Feedback</strong></div>
+                    <div class="facilitator">All Facilitators</div>
+                </div>
+                <div class="agenda-row">
+                    <div class="time">2:30 – 3:00 PM</div>
+                    <div class="topic"><strong>Wrap-Up, Next Steps &amp; Closing Remarks</strong></div>
+                    <div class="facilitator">All Facilitators</div>
+                </div>
+                <div class="agenda-row break">
+                    <div class="time">3:00 – 3:30 PM</div>
+                    <div class="topic">☕ AFTERNOON COFFEE BREAK</div>
+                    <div class="facilitator"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="agenda-notes">
+            <h2>Important Notes</h2>
+            <ul>
+                <li><strong>Pre-Work:</strong> Review Unit 1 deliverables (problem statement, root causes, policy options) before Day 1</li>
+                <li><strong>Required Materials:</strong> Bring laptops with Microsoft Excel installed</li>
+                <li><strong>Templates:</strong> Decision tree Excel templates will be provided</li>
+                <li><strong>Mentorship:</strong> Each group will have dedicated mentor time during group work sessions</li>
+                <li><strong>Presentations:</strong> Use provided PowerPoint template for final presentations</li>
+                <li><strong>Post-Training:</strong> Mentorship support continues through September for economic evaluation refinement</li>
+            </ul>
+        </section>
+
+        <section class="learning-objectives">
+            <h2>Unit 2 Learning Objectives</h2>
+            <p>By the end of this 4-day training, participants will be able to:</p>
+            <div class="objectives-grid">
+                <div class="objective-card">
+                    <h4>L09: Framing Economic Evaluation</h4>
+                    <ul>
+                        <li>Understand key concepts in health economic evaluation</li>
+                        <li>Design an evaluation plan applying perspective, time frame, and analytic horizon</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h4>L10: Assessing Health Impact</h4>
+                    <ul>
+                        <li>Understand why models are used in public health</li>
+                        <li>Construct and populate decision tree models</li>
+                        <li>Calculate expected values for health outcomes</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h4>L11: Cost Analysis</h4>
+                    <ul>
+                        <li>Develop comprehensive cost inventories</li>
+                        <li>Identify and categorize different types of costs</li>
+                        <li>Calculate intervention costs using decision trees</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h4>L12: Economic Evaluation</h4>
+                    <ul>
+                        <li>Construct full economic evaluation models</li>
+                        <li>Calculate and interpret ICERs</li>
+                        <li>Compare interventions using multiple evaluation techniques</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h4>L13: Sensitivity Analysis</h4>
+                    <ul>
+                        <li>Recognize the value of sensitivity analysis</li>
+                        <li>Test model inputs and assumptions</li>
+                        <li>Present uncertainty in economic evaluations</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div><img src="D2P.jpg" alt="Data to Policy - Partner Organizations" class="footer-logo"></div>
+                <div class="footer-text">
+                    <p>&copy; 2026 The Data to Policy (D2P) program, developed by Vital Strategies, CDC Foundation and the U.S. Centers for Disease Control and Prevention with support from the Bloomberg Philanthropies Data for Health Initiative</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
